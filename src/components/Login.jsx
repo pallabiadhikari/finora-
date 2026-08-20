@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isValidPassword, passwordMaxLength, passwordMinLength, passwordPattern, passwordRequirements } from '../utils/password';
 
 function Login({ onLogin, onSwitchToSignup }) {
   const [email, setEmail] = useState('');
@@ -13,6 +14,11 @@ function Login({ onLogin, onSwitchToSignup }) {
 
     if (!email.trim() || !password) {
       setError('Enter your email and password to continue.');
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      setError(passwordRequirements);
       return;
     }
 
@@ -55,7 +61,7 @@ function Login({ onLogin, onSwitchToSignup }) {
             <label htmlFor="login-email">Email address</label>
             <div className="auth-input-wrap"><i className="fas fa-envelope" aria-hidden="true" /><input id="login-email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
             <div className="auth-label-row"><label htmlFor="login-password">Password</label><button type="button" className="forgot-button" onClick={() => setError('Password recovery will be available when Finora is connected to an authentication provider.')}>Forgot password?</button></div>
-            <div className="auth-input-wrap"><i className="fas fa-lock" aria-hidden="true" /><input id="login-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}><i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" /></button></div>
+            <div className="auth-input-wrap"><i className="fas fa-lock" aria-hidden="true" /><input id="login-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" minLength={passwordMinLength} maxLength={passwordMaxLength} pattern={passwordPattern.source} title={passwordRequirements} placeholder="Enter your password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}><i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" /></button></div>
             <label className="remember-row"><input type="checkbox" /> <span>Keep me signed in</span></label>
             <button className="auth-submit" type="submit" disabled={isLoading}>{isLoading ? <><i className="fas fa-spinner fa-spin" aria-hidden="true" /> Signing you in...</> : <>Log in <i className="fas fa-arrow-right" aria-hidden="true" /></>}</button>
           </form>
