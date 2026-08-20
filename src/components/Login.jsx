@@ -24,7 +24,7 @@ function Login({ onLogin, onSwitchToSignup }) {
       if (user) {
         onLogin(user.email, user.name);
       } else {
-        setError('Email or password is incorrect.');
+        setError('We could not sign you in with those details. Please check your email and password, or create an account if you are new to Finora.');
         setIsLoading(false);
       }
     }, 350);
