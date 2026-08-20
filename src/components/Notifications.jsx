@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Notifications({ onClose }) {
+function Notifications({ onClose, onNotificationsChange }) {
   const [notifications, setNotifications] = useState(() => {
     const saved = localStorage.getItem('notifications');
     if (saved) return JSON.parse(saved);
@@ -32,23 +32,27 @@ function Notifications({ onClose }) {
     );
     setNotifications(updated);
     localStorage.setItem('notifications', JSON.stringify(updated));
+    onNotificationsChange?.(updated.filter((notification) => !notification.read).length);
   };
 
   const markAllAsRead = () => {
     const updated = notifications.map(notif => ({ ...notif, read: true }));
     setNotifications(updated);
     localStorage.setItem('notifications', JSON.stringify(updated));
+    onNotificationsChange?.(0);
   };
 
   const deleteNotification = (id) => {
     const updated = notifications.filter(notif => notif.id !== id);
     setNotifications(updated);
     localStorage.setItem('notifications', JSON.stringify(updated));
+    onNotificationsChange?.(updated.filter((notification) => !notification.read).length);
   };
 
   const clearAll = () => {
     setNotifications([]);
     localStorage.setItem('notifications', JSON.stringify([]));
+    onNotificationsChange?.(0);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
