@@ -1,76 +1,184 @@
 import { useState } from 'react';
-import { isValidPassword, passwordMaxLength, passwordMinLength, passwordPattern, passwordRequirements } from '../utils/password';
 
 function Login({ onLogin, onSwitchToSignup }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
     setError('');
-
-    if (!email.trim() || !password) {
-      setError('Enter your email and password to continue.');
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
       return;
     }
 
-    if (!isValidPassword(password)) {
-      setError(passwordRequirements);
-      return;
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      onLogin(email, user.name);
+    } else {
+      setError('Invalid email or password. Please try again or sign up.');
     }
-
-    setIsLoading(true);
-    window.setTimeout(() => {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((item) => item.email.toLowerCase() === email.trim().toLowerCase() && item.password === password);
-
-      if (user) {
-        onLogin(user.email, user.name);
-      } else {
-        setError('We could not sign you in with those details. Please check your email and password, or create an account if you are new to Finora.');
-        setIsLoading(false);
-      }
-    }, 350);
   };
 
   return (
-    <main className="auth-page">
-      <section className="auth-brand-panel">
-        <div className="auth-brand-top">
-          <div className="brand auth-brand"><span className="brand-mark"><i className="fas fa-leaf" aria-hidden="true" /></span><span>finora</span></div>
-          <span className="auth-status"><i className="fas fa-shield-halved" aria-hidden="true" /> Your money, your clarity</span>
-        </div>
-        <div className="auth-message">
-          <span className="eyebrow light-eyebrow">A calmer way to manage money</span>
-          <h1>Know where your money is going.</h1>
-          <p>Finora brings your everyday spending, goals, and financial habits into one clear view.</p>
-        </div>
-        <div className="auth-quote"><span className="quote-mark">“</span><p>Small choices become meaningful progress when you can see the whole picture.</p><span className="quote-caption">Your personal finance companion</span></div>
-      </section>
+    <div style={{
+      maxWidth: '400px',
+      margin: '80px auto',
+      padding: '40px',
+      background: 'white',
+      borderRadius: '16px',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <i className="fas fa-wallet" style={{ fontSize: '48px', color: '#27ae60' }}></i>
+        <h2 style={{ margin: '12px 0 4px 0', color: '#2c3e50' }}>Expense Tracker</h2>
+        <p style={{ color: '#7f8c8d', fontSize: '14px' }}>Sign in to manage your expenses</p>
+      </div>
 
-      <section className="auth-form-panel">
-        <div className="auth-form-wrap">
-          <div className="mobile-auth-brand brand"><span className="brand-mark"><i className="fas fa-leaf" aria-hidden="true" /></span><span>finora</span></div>
-          <div className="auth-heading"><span className="eyebrow">Welcome back</span><h2>Sign in to Finora</h2><p>Pick up right where you left off.</p></div>
+      <form onSubmit={handleSubmit}>
+        {error && (
+          <div style={{
+            background: '#fde8e8',
+            color: '#e74c3c',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            marginBottom: '16px'
+          }}>
+            <i className="fas fa-exclamation-circle" style={{ marginRight: '8px' }}></i>
+            {error}
+          </div>
+        )}
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            {error && <div className="auth-error" role="alert"><i className="fas fa-circle-exclamation" aria-hidden="true" /><span>{error}</span></div>}
-            <label htmlFor="login-email">Email address</label>
-            <div className="auth-input-wrap"><i className="fas fa-envelope" aria-hidden="true" /><input id="login-email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
-            <div className="auth-label-row"><label htmlFor="login-password">Password</label><button type="button" className="forgot-button" onClick={() => setError('Password recovery will be available when Finora is connected to an authentication provider.')}>Forgot password?</button></div>
-            <div className="auth-input-wrap"><i className="fas fa-lock" aria-hidden="true" /><input id="login-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" minLength={passwordMinLength} maxLength={passwordMaxLength} pattern={passwordPattern.source} title={passwordRequirements} placeholder="Enter your password" value={password} onChange={(event) => setPassword(event.target.value)} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Hide password' : 'Show password'}><i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" /></button></div>
-            <label className="remember-row"><input type="checkbox" /> <span>Keep me signed in</span></label>
-            <button className="auth-submit" type="submit" disabled={isLoading}>{isLoading ? <><i className="fas fa-spinner fa-spin" aria-hidden="true" /> Signing you in...</> : <>Log in <i className="fas fa-arrow-right" aria-hidden="true" /></>}</button>
-          </form>
-
-          <p className="auth-switch">Don’t have a Finora account? <button type="button" onClick={onSwitchToSignup}>Create one</button></p>
-          <p className="auth-legal">By continuing, you agree to Finora’s Terms and Privacy Policy.</p>
+        <div style={{ marginBottom: '16px' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '6px', 
+            fontSize: '14px', 
+            fontWeight: '500',
+            color: '#2c3e50'
+          }}>
+            Email
+          </label>
+          <input
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              border: '2px solid #e8ecf1',
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#27ae60'}
+            onBlur={(e) => e.target.style.borderColor = '#e8ecf1'}
+          />
         </div>
-      </section>
-    </main>
+
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '6px', 
+            fontSize: '14px', 
+            fontWeight: '500',
+            color: '#2c3e50'
+          }}>
+            Password
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                paddingRight: '44px',
+                border: '2px solid #e8ecf1',
+                borderRadius: '8px',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#27ae60'}
+              onBlur={(e) => e.target.style.borderColor = '#e8ecf1'}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#7f8c8d',
+                cursor: 'pointer',
+                fontSize: '18px',
+                padding: '4px'
+              }}
+            >
+              <i className={showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'}></i>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          style={{
+            width: '100%',
+            padding: '14px',
+            background: '#27ae60',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#219a52'}
+          onMouseLeave={(e) => e.target.style.background = '#27ae60'}
+        >
+          <i className="fas fa-sign-in-alt" style={{ marginRight: '8px' }}></i>
+          Sign In
+        </button>
+
+        <div style={{ 
+          marginTop: '16px', 
+          textAlign: 'center', 
+          fontSize: '14px', 
+          color: '#7f8c8d'
+        }}>
+          Don't have an account?{' '}
+          <button
+            type="button"
+            onClick={onSwitchToSignup}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#27ae60',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Sign Up
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

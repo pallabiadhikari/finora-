@@ -2,17 +2,14 @@ function Balance({ expenses }) {
   const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const totalExpenses = expenses.length;
   
-  // Calculate total spend (sum of all expenses)
   const totalSpend = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   
-  // Get current month and year for display
   const now = new Date();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                       'July', 'August', 'September', 'October', 'November', 'December'];
   const currentMonth = monthNames[now.getMonth()];
   const currentYear = now.getFullYear();
 
-  // Calculate this month's spending
   const thisMonthExpenses = expenses.filter(exp => {
     const expDate = new Date(exp.date);
     return expDate.getMonth() === now.getMonth() && 
@@ -50,7 +47,6 @@ function Balance({ expenses }) {
         </div>
       </div>
 
-      {/* Total Spend Section */}
       <div style={{
         marginTop: '16px',
         paddingTop: '16px',

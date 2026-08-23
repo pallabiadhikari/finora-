@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { isValidPassword, passwordMaxLength, passwordMinLength, passwordPattern, passwordRequirements } from '../utils/password';
 
 function Signup({ onSignup, onSwitchToLogin }) {
   const [name, setName] = useState('');
@@ -26,21 +25,18 @@ function Signup({ onSignup, onSwitchToLogin }) {
       return;
     }
 
-    if (!isValidPassword(password)) {
-      setError(passwordRequirements);
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
-    // Get existing users from localStorage
     const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
     
-    // Check if email already exists
     if (existingUsers.find(user => user.email === email)) {
       setError('Email already registered. Please login.');
       return;
     }
 
-    // Create new user
     const newUser = {
       id: Date.now(),
       name: name,
@@ -49,13 +45,11 @@ function Signup({ onSignup, onSwitchToLogin }) {
       createdAt: new Date().toLocaleDateString()
     };
 
-    // Save to localStorage
     existingUsers.push(newUser);
     localStorage.setItem('users', JSON.stringify(existingUsers));
 
     setSuccess('Account created successfully!');
     
-    // Auto-login - pass name to parent
     setTimeout(() => {
       onSignup(email, name);
     }, 1000);
@@ -176,11 +170,7 @@ function Signup({ onSignup, onSwitchToLogin }) {
           <div style={{ position: 'relative' }}>
             <input
               type={showPassword ? 'text' : 'password'}
-              minLength={passwordMinLength}
-              maxLength={passwordMaxLength}
-              pattern={passwordPattern.source}
-              title={passwordRequirements}
-              placeholder="8-64 characters with upper, lower, digit, special"
+              placeholder="Min 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{
@@ -215,7 +205,6 @@ function Signup({ onSignup, onSwitchToLogin }) {
               <i className={showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'}></i>
             </button>
           </div>
-          <p style={{ margin: '6px 0 0 0', color: '#7f8c8d', fontSize: '12px' }}>{passwordRequirements}</p>
         </div>
 
         <div style={{ marginBottom: '24px' }}>

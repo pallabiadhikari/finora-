@@ -1,17 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect } from 'react';
+import Header from './components/Header';
+import Balance from './components/Balance';
+import AddExpense from './components/AddExpense';
+import ExpenseList from './components/ExpenseList';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { categories } from './data/categories';
-import './App.css';
-
-const categoryIcons = { Food: 'fa-utensils', Transport: 'fa-car', Shopping: 'fa-bag-shopping', Bills: 'fa-file-invoice', Entertainment: 'fa-film', Health: 'fa-heart-pulse', Education: 'fa-graduation-cap', Travel: 'fa-plane', Other: 'fa-tag' };
-const currency = (value) => `Rs. ${Math.abs(Number(value) || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-const dateLabel = (date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-const savedBudget = (key) => {
-  const value = localStorage.getItem(`budget-${key}`);
-  return value === '30000' ? 0 : Number(value) || 0;
-};
-function Icon({ name }) { return <i className={`fas ${name}`} aria-hidden="true" />; }
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -21,23 +14,19 @@ function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     return localStorage.getItem('currentUser') || '';
   });
-  const [currentUserEmail, setCurrentUserEmail] = useState(() => localStorage.getItem('currentUserEmail') || '');
 
   const [showSignup, setShowSignup] = useState(false);
-  const [activeView, setActiveView] = useState('dashboard');
-  const [showForm, setShowForm] = useState(false);
-  const [editingTransactionId, setEditingTransactionId] = useState(null);
-  const [formType, setFormType] = useState('expense');
-  const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState('All');
-  const initialUserKey = (currentUserEmail || currentUser || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const [transactions, setTransactions] = useState(() => JSON.parse(localStorage.getItem(`transactions-${initialUserKey}`) || '[]'));
-  const [budget, setBudget] = useState(() => savedBudget(initialUserKey));
-  const [form, setForm] = useState({ title: '', amount: '', category: 'Food', date: new Date().toISOString().slice(0, 10), note: '' });
 
-  const userKey = (currentUserEmail || currentUser || 'guest').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  useEffect(() => { if (currentUser) localStorage.setItem(`transactions-${userKey}`, JSON.stringify(transactions)); }, [currentUser, transactions, userKey]);
-  useEffect(() => { if (currentUser) localStorage.setItem(`budget-${userKey}`, budget); }, [budget, currentUser, userKey]);
+  const [expenses, setExpenses] = useState(() => {
+    const saved = localStorage.getItem('expenses');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [filterCategory, setFilterCategory] = useState('All');
+
+  useEffect(() => {
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+  }, [expenses]);
 
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
@@ -52,55 +41,42 @@ function App() {
   const handleLogin = (email, name) => {
     setIsLoggedIn(true);
     const displayName = name || email.split('@')[0];
-    const nextUserKey = email.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     setCurrentUser(displayName);
-    setCurrentUserEmail(email);
-    setTransactions(JSON.parse(localStorage.getItem(`transactions-${nextUserKey}`) || '[]'));
-    setBudget(savedBudget(nextUserKey));
     localStorage.setItem('currentUser', displayName);
-    localStorage.setItem('currentUserEmail', email);
   };
 
   const handleSignup = (email, name) => {
     setIsLoggedIn(true);
     const displayName = name || email.split('@')[0];
-    const nextUserKey = email.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     setCurrentUser(displayName);
-    setCurrentUserEmail(email);
-    setTransactions(JSON.parse(localStorage.getItem(`transactions-${nextUserKey}`) || '[]'));
-    setBudget(savedBudget(nextUserKey));
     localStorage.setItem('currentUser', displayName);
-    localStorage.setItem('currentUserEmail', email);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser('');
-    setCurrentUserEmail('');
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('currentUserEmail');
     localStorage.removeItem('isLoggedIn');
   };
 
-  const income = useMemo(() => transactions.filter((item) => item.type === 'income').reduce((sum, item) => sum + item.amount, 0), [transactions]);
-  const expenses = useMemo(() => transactions.filter((item) => item.type === 'expense').reduce((sum, item) => sum + item.amount, 0), [transactions]);
-  const visibleTransactions = useMemo(() => transactions.filter((item) => `${item.title} ${item.category}`.toLowerCase().includes(query.toLowerCase()) && (filter === 'All' || item.category === filter || item.type === filter)), [transactions, query, filter]);
-  const monthSpent = transactions.filter((item) => item.type === 'expense' && new Date(item.date).getMonth() === new Date().getMonth()).reduce((sum, item) => sum + item.amount, 0);
-  const budgetUsage = budget > 0 ? Math.min(monthSpent / budget * 100, 100) : 0;
-  const firstName = (currentUser || 'Pallabi').split(' ')[0];
-  const openForm = (type = 'expense', transaction = null) => { setEditingTransactionId(transaction?.id || null); setFormType(transaction?.type || type); setForm(transaction ? { title: transaction.title, amount: transaction.amount, category: transaction.category, date: transaction.date.slice(0, 10), note: transaction.note || '' } : { title: '', amount: '', category: type === 'income' ? 'Salary' : 'Food', date: new Date().toISOString().slice(0, 10), note: '' }); setShowForm(true); };
-  const saveTransaction = (event) => { event.preventDefault(); if (!form.title.trim() || Number(form.amount) <= 0) return; const updatedTransaction = { ...form, id: editingTransactionId || Date.now(), type: formType, title: form.title.trim(), amount: Number(form.amount), date: new Date(form.date).toISOString() }; setTransactions(editingTransactionId ? transactions.map((item) => item.id === editingTransactionId ? updatedTransaction : item) : [updatedTransaction, ...transactions]); setEditingTransactionId(null); setShowForm(false); };
-  const handleDeleteAccount = () => {
-    if (!window.confirm('Delete your account and all of its financial data? This cannot be undone.')) return;
-
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    localStorage.setItem('users', JSON.stringify(users.filter((user) => user.email.toLowerCase() !== currentUserEmail.toLowerCase())));
-    localStorage.removeItem(`transactions-${userKey}`);
-    localStorage.removeItem(`budget-${userKey}`);
-    handleLogout();
+  const addExpense = (newExpense) => {
+    setExpenses([newExpense, ...expenses]);
   };
 
-  // Show Login or Signup
+  const deleteExpense = (id) => {
+    setExpenses(expenses.filter(expense => expense.id !== id));
+  };
+
+  const editExpense = (updatedExpense) => {
+    setExpenses(expenses.map(exp => 
+      exp.id === updatedExpense.id ? updatedExpense : exp
+    ));
+  };
+
+  const filteredExpenses = filterCategory === 'All' 
+    ? expenses 
+    : expenses.filter(exp => exp.category === filterCategory);
+
   if (!isLoggedIn) {
     if (showSignup) {
       return (
@@ -118,35 +94,25 @@ function App() {
     );
   }
 
-  const navItems = [['dashboard', 'fa-grid-2', 'Overview'], ['transactions', 'fa-receipt', 'Transactions'], ['budget', 'fa-wallet', 'Budget'], ['reports', 'fa-chart-pie', 'Reports'], ['settings', 'fa-sliders', 'Settings']];
-  return <div className="app-shell"><aside className="sidebar"><div className="brand"><span className="brand-mark"><Icon name="fa-leaf" /></span><span>finora</span></div><p className="tagline">Spend smarter. Live clearer.</p><nav aria-label="Main navigation">{navItems.map(([id, icon, label]) => <button className={activeView === id ? 'nav-item active' : 'nav-item'} key={id} onClick={() => setActiveView(id)}><Icon name={icon} />{label}</button>)}</nav><div className="sidebar-footer"><div className="avatar">{firstName[0]}</div><div><strong>{firstName}</strong><span>Personal account</span></div><button className="icon-button" onClick={handleLogout} aria-label="Log out"><Icon name="fa-arrow-right-from-bracket" /></button></div></aside><main className="main-content"><header className="topbar"><div><span className="eyebrow">{activeView === 'dashboard' ? 'Overview' : activeView}</span><h1>{activeView === 'dashboard' ? `Good morning, ${firstName}` : activeView[0].toUpperCase() + activeView.slice(1)}</h1></div><div className="topbar-actions"><button className="primary-button" onClick={() => openForm()}><Icon name="fa-plus" /> Add transaction</button></div></header>{activeView === 'dashboard' && <Dashboard income={income} expenses={expenses} budget={budget} monthSpent={monthSpent} budgetUsage={budgetUsage} transactions={transactions} setActiveView={setActiveView} onEdit={(transaction) => openForm(transaction.type, transaction)} onAdd={() => openForm()} />}{activeView === 'transactions' && <section className="panel transactions-page"><div className="toolbar"><div className="search-field"><Icon name="fa-magnifying-glass" /><input aria-label="Search transactions" placeholder="Search transactions..." value={query} onChange={(event) => setQuery(event.target.value)} /></div><select value={filter} onChange={(event) => setFilter(event.target.value)} aria-label="Filter transactions"><option>All</option><option>income</option>{categories.map((item) => <option key={item.name}>{item.name}</option>)}</select></div><TransactionRows items={visibleTransactions} onEdit={(transaction) => openForm(transaction.type, transaction)} /></section>}{activeView === 'budget' && <section className="panel budget-page"><span className="eyebrow">Your spending limit</span><h2>Monthly budget</h2><div className="budget-edit"><input type="number" min="0" value={budget} onChange={(event) => setBudget(Number(event.target.value))} aria-label="Monthly budget" /><span>Rs.</span></div><div className="large-progress progress"><span style={{ width: `${budgetUsage}%` }} /></div><div className="budget-summary"><div><span>Spent</span><strong>{currency(monthSpent)}</strong></div><div><span>Remaining</span><strong>{currency(Math.max(budget - monthSpent, 0))}</strong></div><div><span>Used</span><strong>{budget > 0 ? `${Math.round(budgetUsage)}%` : 'Not set'}</strong></div></div></section>}{activeView === 'reports' && <Reports transactions={transactions} />}{activeView === 'settings' && <section className="panel settings-page"><span className="eyebrow">Account</span><h2>Profile & preferences</h2><div className="settings-row"><div><strong>{currentUser}</strong><span>Profile name</span></div><span className="muted">Local demo account</span></div><div className="settings-row"><div><strong>NPR / Rs.</strong><span>Currency</span></div><select aria-label="Currency"><option>NPR / Rs.</option><option>USD / $</option></select></div><button className="danger-button" onClick={handleDeleteAccount}><Icon name="fa-user-xmark" /> Delete my account</button></section>}</main>{showForm && <TransactionForm form={form} formType={formType} setForm={setForm} setFormType={setFormType} editingTransactionId={editingTransactionId} onClose={() => { setEditingTransactionId(null); setShowForm(false); }} onSave={saveTransaction} />}</div>;
-function Dashboard({ income, expenses, budget, monthSpent, budgetUsage, transactions, setActiveView, onEdit, onAdd }) { return <><p className="page-intro">Here’s your financial overview for this month.</p><section className="hero-balance"><div><span className="label inverse">Total balance</span><div className="balance-amount">{currency(income - expenses)}</div><span className="balance-change"><Icon name="fa-arrow-trend-up" /> 8.4% this month</span></div><div className="balance-orbit"><Icon name="fa-chart-line" /></div></section><section className="stat-grid"><Stat label="Total income" value={income} icon="fa-arrow-down-to-bracket" tone="positive" /><Stat label="Total expenses" value={expenses} icon="fa-arrow-up-from-bracket" tone="negative" /><Stat label="Monthly budget" value={budget} icon="fa-bullseye" tone="neutral" /><Stat label="Transactions" value={transactions.length} icon="fa-receipt" tone="neutral" isCount /></section><div className="content-grid"><section className="panel recent-panel"><div className="section-heading"><div><span className="eyebrow">Activity</span><h2>Recent transactions</h2></div><button className="text-button" onClick={() => setActiveView('transactions')}>View all <Icon name="fa-arrow-right" /></button></div><TransactionRows items={transactions.slice(0, 4)} onEdit={onEdit} /></section><section className="panel budget-panel"><div className="section-heading"><div><span className="eyebrow">This month</span><h2>Budget progress</h2></div><Icon name="fa-ellipsis" /></div><div className="budget-figure"><strong>{currency(monthSpent)}</strong><span>{budget > 0 ? `of ${currency(budget)}` : 'Set a monthly budget'}</span></div><div className="progress"><span style={{ width: `${budgetUsage}%` }} /></div><div className="budget-meta"><span>{budget > 0 ? (budget - monthSpent > 0 ? `${currency(budget - monthSpent)} remaining` : 'Budget exceeded') : 'No budget set yet'}</span><strong>{budget > 0 ? `${Math.round(budgetUsage)}%` : 'Not set'}</strong></div><button className="outline-button" onClick={() => setActiveView('budget')}>Manage budget</button></section></div><button className="floating-add" onClick={onAdd}><Icon name="fa-plus" /> Add transaction</button></>; }
-function Stat({ label, value, icon, tone, isCount }) { return <div className="stat-card"><span className={`stat-icon ${tone}`}><Icon name={icon} /></span><div><span className="label">{label}</span><strong>{isCount ? value : currency(value)}</strong></div></div>; }
-function TransactionRows({ items, onEdit }) { return items.length ? <div className="transaction-list">{items.map((item) => <div className="transaction-row" key={item.id}><span className={`transaction-icon ${item.type}`}><Icon name={item.type === 'income' ? 'fa-arrow-down' : (categoryIcons[item.category] || 'fa-tag')} /></span><div className="transaction-info"><strong>{item.title}</strong><span>{item.category} · {dateLabel(item.date)}</span></div><strong className={item.type === 'income' ? 'amount positive-text' : 'amount'}>{item.type === 'income' ? '+' : '-'} {currency(item.amount)}</strong><button className="icon-button subtle" onClick={() => onEdit(item)} aria-label={`Edit ${item.title}`}><Icon name="fa-pen" /></button></div>)}</div> : <div className="empty-state"><Icon name="fa-receipt" /><p>No transactions yet. Add your first transaction to get started.</p></div>; }
-const nepaliMonths = ['Baishakh', 'Jestha', 'Asadh', 'Shrawan', 'Bhadra', 'Ashwin', 'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra'];
-function Reports({ transactions }) {
-  const [range, setRange] = useState('monthly');
-  const expenses = transactions.filter((item) => item.type === 'expense');
-  const today = new Date();
-  const dailyData = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(today);
-    date.setHours(0, 0, 0, 0);
-    date.setDate(today.getDate() - (6 - index));
-    const key = date.toISOString().slice(0, 10);
-    return { label: date.toLocaleDateString('en-US', { weekday: 'short' }), value: expenses.filter((item) => item.date.slice(0, 10) === key).reduce((sum, item) => sum + item.amount, 0) };
-  });
-  const monthlyData = Array.from({ length: 6 }, (_, index) => {
-    const date = new Date(today.getFullYear(), today.getMonth() - (5 - index), 1);
-    return { label: nepaliMonths[date.getMonth()], value: expenses.filter((item) => { const expenseDate = new Date(item.date); return expenseDate.getFullYear() === date.getFullYear() && expenseDate.getMonth() === date.getMonth(); }).reduce((sum, item) => sum + item.amount, 0) };
-  });
-  const data = range === 'daily' ? dailyData : monthlyData;
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-  const max = Math.max(...data.map((item) => item.value), 1);
-  const byCategory = expenses.reduce((result, item) => ({ ...result, [item.category]: (result[item.category] || 0) + item.amount }), {});
-  const topCategory = Object.entries(byCategory).sort(([, first], [, second]) => second - first)[0];
-  return <div className="reports-layout"><section className="panel report-panel"><div className="report-heading"><div><span className="eyebrow">Spending report</span><h2>{range === 'daily' ? 'Daily report' : 'Monthly report'}</h2></div><div className="report-switch" role="group" aria-label="Report period"><button className={range === 'daily' ? 'active' : ''} onClick={() => setRange('daily')}>Daily</button><button className={range === 'monthly' ? 'active' : ''} onClick={() => setRange('monthly')}>Monthly</button></div></div><div className="report-total"><span>{range === 'daily' ? 'Last 7 days' : 'Last 6 months'}</span><strong>{currency(total)}</strong></div><div className="bar-chart" aria-label={`${range} expense bar chart`}>{data.map((item) => <div className="bar-column" key={item.label}><span className="bar-value">{item.value ? currency(item.value) : ''}</span><div className="bar-track"><span style={{ height: `${item.value / max * 100}%` }} /></div><span className="bar-label">{item.label}</span></div>)}</div></section><section className="panel insight-panel"><span className="eyebrow">Finora insight</span><Icon name="fa-lightbulb" /><h2>{topCategory ? `${topCategory[0]} is your highest spending category` : 'Your spending report will appear here'}</h2><p>{topCategory ? `${currency(topCategory[1])} spent so far. Reviewing your ${range} report can help you plan the next decision.` : 'Add a few expenses to see useful patterns in your daily and monthly reports.'}</p></section></div>;
-}
-function TransactionForm({ form, formType, setForm, setFormType, editingTransactionId, onClose, onSave }) { const options = formType === 'income' ? ['Salary', 'Freelance', 'Business', 'Investment', 'Gift', 'Other'] : [...categories.map((item) => item.name), 'Travel']; return <div className="modal-backdrop"><form className="modal" onSubmit={onSave}><div className="modal-header"><div><span className="eyebrow">{editingTransactionId ? 'Edit entry' : 'New entry'}</span><h2>{editingTransactionId ? 'Edit' : 'Add'} {formType}</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Close"><Icon name="fa-xmark" /></button></div><div className="type-switch"><button type="button" className={formType === 'expense' ? 'selected' : ''} onClick={() => setFormType('expense')}>Expense</button><button type="button" className={formType === 'income' ? 'selected income' : ''} onClick={() => setFormType('income')}>Income</button></div><label>Amount<input required type="number" min="1" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} placeholder="0" /></label><label>Title<input required minLength="2" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} placeholder="e.g. Groceries" /></label><div className="form-row"><label>Category<select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}>{options.map((item) => <option key={item}>{item}</option>)}</select></label><label>Date<input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} /></label></div><label>Note <span className="muted">Optional</span><textarea value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} rows="2" /></label><button className="primary-button full-width" type="submit">{editingTransactionId ? 'Save changes' : 'Save transaction'}</button></form></div>; }
+  return (
+    <div style={{ 
+      maxWidth: '720px', 
+      margin: '0 auto', 
+      padding: '0'
+    }}>
+      <Header onLogout={handleLogout} currentUser={currentUser} />
+      <Balance expenses={expenses} />
+      <AddExpense onAddExpense={addExpense} />
+      <ExpenseList 
+        expenses={filteredExpenses} 
+        onDeleteExpense={deleteExpense}
+        onEditExpense={editExpense}
+        filterCategory={filterCategory}
+        setFilterCategory={setFilterCategory}
+        totalExpenses={expenses.length}
+      />
+    </div>
+  );
 }
 
 export default App;

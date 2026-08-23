@@ -4,7 +4,37 @@
   box-sizing: border-box;
 }
 
-:root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #263238; background: #f5f7f6; font-synthesis: none; }
-body { min-width: 320px; min-height: 100vh; margin: 0; background: #f5f7f6; color: #263238; line-height: 1.5; }
-button, input, select, textarea { font: inherit; }
-button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid rgba(39, 174, 96, .35); outline-offset: 2px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #f0f2f5;
+  color: #2c3e50;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+:root {
+  --primary: #1a472a;
+  --primary-light: #2e7d32;
+  --primary-dark: #0d3318;
+  --accent: #4caf50;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --background: #f0f2f5;
+  --card: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border: #e8ecf1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f2f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27ae60;
+  border-radius: 10px;
+}

@@ -6,6 +6,20 @@ function AddExpense({ onAddExpense }) {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food');
 
+  const addNotification = (title, message) => {
+    const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
+    const newNotification = {
+      id: Date.now(),
+      title: title,
+      message: message,
+      time: new Date().toLocaleString(),
+      read: false,
+      icon: 'fa-receipt'
+    };
+    existing.unshift(newNotification);
+    localStorage.setItem('notifications', JSON.stringify(existing));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -27,6 +41,12 @@ function AddExpense({ onAddExpense }) {
     };
 
     onAddExpense(newExpense);
+    
+    addNotification(
+      'Expense Added',
+      `You added "${title.trim()}" for Rs. ${parseFloat(amount).toFixed(2)}`
+    );
+    
     setTitle('');
     setAmount('');
     setCategory('Food');

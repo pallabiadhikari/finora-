@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import EditExpense from './EditExpense';
 
-function ExpenseList({ expenses, onDeleteExpense, onEditExpense, filterCategory, setFilterCategory }) {
+function ExpenseList({ expenses, onDeleteExpense, onEditExpense, filterCategory, setFilterCategory, totalExpenses }) {
   const [editingExpense, setEditingExpense] = useState(null);
   
   const categories = ['All', 'Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Education', 'Other'];
