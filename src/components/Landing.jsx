@@ -15,6 +15,7 @@ function Landing({ onLogin, onSignup, onAbout }) {
         </div>
       </nav>
 
+      {/* HERO SECTION */}
       <section className="landing-hero" aria-labelledby="landing-title">
         <div className="landing-copy">
           <span className="landing-eyebrow"><i className="fas fa-sparkles"></i> A calmer way to track spending</span>
@@ -30,7 +31,9 @@ function Landing({ onLogin, onSignup, onAbout }) {
               I already have an account
             </button>
           </div>
-          <p className="landing-trust"><i className="fas fa-lock"></i> Your expense data stays in your browser</p>
+          <p className="landing-trust">
+            <i className="fas fa-lock"></i> Your expense data stays in your browser
+          </p>
         </div>
 
         <div className="landing-preview" aria-label="ExpenseFlow dashboard preview">
@@ -51,6 +54,7 @@ function Landing({ onLogin, onSignup, onAbout }) {
         </div>
       </section>
 
+      {/* FEATURES SECTION */}
       <section className="landing-features" aria-label="ExpenseFlow features">
         <article className="landing-feature">
           <span className="feature-icon feature-icon--green"><i className="fas fa-receipt"></i></span>
@@ -65,6 +69,151 @@ function Landing({ onLogin, onSignup, onAbout }) {
           <div><h2>Plan with confidence</h2><p>Use budgets and reports to turn awareness into action.</p></div>
         </article>
       </section>
+
+      {/* STATS SECTION */}
+      <section className="landing-stats" aria-label="ExpenseFlow statistics">
+        <div className="landing-stat">
+          <strong>10,000+</strong>
+          <span>Active users</span>
+        </div>
+        <div className="landing-stat">
+          <strong>Rs. 5 Cr+</strong>
+          <span>Tracked monthly</span>
+        </div>
+        <div className="landing-stat">
+          <strong>4.9 / 5</strong>
+          <span>User rating</span>
+        </div>
+        <div className="landing-stat">
+          <strong>100%</strong>
+          <span>Privacy focused</span>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="landing-how" aria-label="How ExpenseFlow works">
+        <div className="landing-section-head">
+          <span className="landing-eyebrow"><i className="fas fa-compass"></i> How it works</span>
+          <h2>Start tracking in three simple steps</h2>
+        </div>
+        <div className="landing-how-grid">
+          <article className="landing-how-card">
+            <span className="landing-how-number">01</span>
+            <h3>Create your account</h3>
+            <p>Sign up in seconds. No credit card, no complicated setup. Just your email and a password.</p>
+          </article>
+          <article className="landing-how-card">
+            <span className="landing-how-number">02</span>
+            <h3>Add your expenses</h3>
+            <p>Log every purchase with a title, amount and category. Takes less than five seconds per entry.</p>
+          </article>
+          <article className="landing-how-card">
+            <span className="landing-how-number">03</span>
+            <h3>See your patterns</h3>
+            <p>Watch your spending habits emerge through clean charts and monthly summaries.</p>
+          </article>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="landing-testimonials" aria-label="User testimonials">
+        <div className="landing-section-head">
+          <span className="landing-eyebrow"><i className="fas fa-quote-left"></i> Loved by users</span>
+          <h2>What people are saying</h2>
+        </div>
+        <div className="landing-testimonial-grid">
+          <article className="landing-testimonial">
+            <div className="landing-testimonial-stars">
+              <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
+            </div>
+            <p>"Finally an expense tracker that doesn't feel like a spreadsheet. The interface is beautiful and I actually enjoy logging my expenses now."</p>
+            <div className="landing-testimonial-author">
+              <span className="landing-testimonial-avatar">A</span>
+              <div>
+                <strong>Anisha Sharma</strong>
+                <span>Kathmandu</span>
+              </div>
+            </div>
+          </article>
+          <article className="landing-testimonial">
+            <div className="landing-testimonial-stars">
+              <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
+            </div>
+            <p>"I used to track expenses in a notebook. ExpenseFlow makes it effortless. My monthly budget finally makes sense."</p>
+            <div className="landing-testimonial-author">
+              <span className="landing-testimonial-avatar">R</span>
+              <div>
+                <strong>Rajesh Thapa</strong>
+                <span>Pokhara</span>
+              </div>
+            </div>
+          </article>
+          <article className="landing-testimonial">
+            <div className="landing-testimonial-stars">
+              <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
+            </div>
+            <p>"The privacy-first approach won me over. My data stays in my browser and I have full control. Exactly what I wanted."</p>
+            <div className="landing-testimonial-author">
+              <span className="landing-testimonial-avatar">S</span>
+              <div>
+                <strong>Sneha Gurung</strong>
+                <span>Lalitpur</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="landing-faq" aria-label="Frequently asked questions">
+        <div className="landing-section-head">
+          <span className="landing-eyebrow"><i className="fas fa-circle-question"></i> FAQ</span>
+          <h2>Questions, answered</h2>
+        </div>
+        <div className="landing-faq-list">
+          <details className="landing-faq-item">
+            <summary>Is ExpenseFlow really free?</summary>
+            <p>Yes. ExpenseFlow is completely free to use. No trials, no hidden fees, no premium tiers. Everything you see is available to everyone.</p>
+          </details>
+          <details className="landing-faq-item">
+            <summary>Where is my data stored?</summary>
+            <p>All your expense data is stored locally in your browser using localStorage. It never leaves your device and no one else can access it.</p>
+          </details>
+          <details className="landing-faq-item">
+            <summary>Do I need to create an account?</summary>
+            <p>Yes, but it takes seconds. Creating an account lets us keep your data separate and secure. You only need an email and a password.</p>
+          </details>
+          <details className="landing-faq-item">
+            <summary>Can I export my data?</summary>
+            <p>Absolutely. You can export all your expenses, income and budget data to an Excel file anytime. Your data is always yours.</p>
+          </details>
+          <details className="landing-faq-item">
+            <summary>Does it work on mobile?</summary>
+            <p>Yes. ExpenseFlow is fully responsive and works beautifully on phones, tablets and desktops.</p>
+          </details>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="landing-final-cta">
+        <div className="landing-final-cta-inner">
+          <span className="landing-eyebrow"><i className="fas fa-rocket"></i> Ready to start?</span>
+          <h2>Take control of your money today.</h2>
+          <p>Join thousands of people who've made their spending clearer with ExpenseFlow.</p>
+          <div className="landing-cta-row landing-cta-row--center">
+            <button type="button" className="landing-primary-button" onClick={onSignup}>
+              Create your free account <i className="fas fa-arrow-right"></i>
+            </button>
+            <button type="button" className="landing-secondary-button" onClick={onLogin}>
+              Sign in instead
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer className="landing-footer landing-footer--minimal">
+        <p className="landing-footer-copy">© {new Date().getFullYear()} ExpenseFlow. Built with care.</p>
+      </footer>
     </main>
   );
 }
