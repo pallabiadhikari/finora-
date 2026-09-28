@@ -31,29 +31,31 @@ function Notifications({ onClose }) {
     }
   }, []);
 
+  const persistNotifications = (updated) => {
+    setNotifications(updated);
+    localStorage.setItem('notifications', JSON.stringify(updated));
+    window.dispatchEvent(new Event('notification-update'));
+  };
+
   const markAsRead = (id) => {
     const updated = notifications.map(notif => 
       notif.id === id ? { ...notif, read: true } : notif
     );
-    setNotifications(updated);
-    localStorage.setItem('notifications', JSON.stringify(updated));
+    persistNotifications(updated);
   };
 
   const markAllAsRead = () => {
     const updated = notifications.map(notif => ({ ...notif, read: true }));
-    setNotifications(updated);
-    localStorage.setItem('notifications', JSON.stringify(updated));
+    persistNotifications(updated);
   };
 
   const deleteNotification = (id) => {
     const updated = notifications.filter(notif => notif.id !== id);
-    setNotifications(updated);
-    localStorage.setItem('notifications', JSON.stringify(updated));
+    persistNotifications(updated);
   };
 
   const clearAll = () => {
-    setNotifications([]);
-    localStorage.setItem('notifications', JSON.stringify([]));
+    persistNotifications([]);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;

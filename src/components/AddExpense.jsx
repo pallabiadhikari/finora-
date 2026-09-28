@@ -5,6 +5,7 @@ function AddExpense({ onAddExpense }) {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food');
+  const [error, setError] = useState('');
 
   const addNotification = (title, message) => {
     const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
@@ -18,13 +19,15 @@ function AddExpense({ onAddExpense }) {
     };
     existing.unshift(newNotification);
     localStorage.setItem('notifications', JSON.stringify(existing));
+    window.dispatchEvent(new Event('notification-update'));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError('');
     
-    if (!title.trim() || !amount) {
-      alert('Please fill in all fields');
+    if (!title.trim() || !amount || Number(amount) <= 0) {
+      setError('Please enter what you spent and an amount greater than zero.');
       return;
     }
 
@@ -53,7 +56,7 @@ function AddExpense({ onAddExpense }) {
   };
 
   return (
-    <div style={{
+    <div id="expense-form" style={{
       background: 'white',
       padding: '20px 24px',
       borderRadius: '12px',
@@ -69,6 +72,7 @@ function AddExpense({ onAddExpense }) {
         <i className="fas fa-plus-circle" style={{ color: '#27ae60', marginRight: '8px' }}></i>
         Add Expense
       </h3>
+      {error && <div className="form-error" role="alert"><i className="fas fa-circle-exclamation"></i>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

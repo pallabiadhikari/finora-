@@ -1,8 +1,9 @@
-function Balance({ expenses }) {
-  const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-  const totalExpenses = expenses.length;
+function Balance({ expenses, incomes = [], currentBalance }) {
+  const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount || 0), 0);
+  const totalSpend = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+  const total = currentBalance ?? (totalIncome - totalSpend);
+  const totalTransactions = expenses.length + incomes.length;
   
-  const totalSpend = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   
   const now = new Date();
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
@@ -15,7 +16,7 @@ function Balance({ expenses }) {
     return expDate.getMonth() === now.getMonth() && 
            expDate.getFullYear() === now.getFullYear();
   });
-  const monthlySpend = thisMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const monthlySpend = thisMonthExpenses.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
 
   return (
     <div style={{
@@ -42,7 +43,7 @@ function Balance({ expenses }) {
         <div style={{ textAlign: 'right' }}>
           <p style={{ margin: 0, color: '#7f8c8d', fontSize: '13px' }}>
             <i className="fas fa-receipt" style={{ marginRight: '4px' }}></i>
-            {totalExpenses} transactions
+            {totalTransactions} entries
           </p>
         </div>
       </div>

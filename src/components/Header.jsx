@@ -2,97 +2,81 @@ import { useState, useEffect } from 'react';
 import Notifications from './Notifications';
 import { capitalizeName } from '../utils/helpers';
 
-function Header({ onLogout, currentUser }) {
+function Header({ onLogout, currentUser, currentEmail, expenses, incomes, budget, onExport, onOpenSettings }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const displayName = capitalizeName(currentUser || localStorage.getItem('currentUser') || 'User');
 
-  useEffect(() => {
+  const syncUnreadCount = () => {
     const saved = localStorage.getItem('notifications');
-    if (saved) {
-      const notifications = JSON.parse(saved);
-      const count = notifications.filter(n => !n.read).length;
-      setUnreadCount(count);
+    if (!saved) {
+      setUnreadCount(0);
+      return;
     }
-  }, [showNotifications]);
+
+    try {
+      const notifications = JSON.parse(saved);
+      setUnreadCount(notifications.filter((n) => !n.read).length);
+    } catch (error) {
+      setUnreadCount(0);
+    }
+  };
+
+  useEffect(() => {
+    syncUnreadCount();
+
+    const handleNotificationUpdate = () => syncUnreadCount();
+    window.addEventListener('storage', handleNotificationUpdate);
+    window.addEventListener('notification-update', handleNotificationUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleNotificationUpdate);
+      window.removeEventListener('notification-update', handleNotificationUpdate);
+    };
+  }, []);
 
   const handleNotificationClick = () => {
     setShowNotifications(true);
+    syncUnreadCount();
   };
 
   return (
     <>
-      <header style={{
-        background: 'linear-gradient(135deg, #1a472a 0%, #2e7d32 100%)',
-        color: 'white',
-        padding: '20px 24px',
-        borderRadius: '12px',
-        marginBottom: '24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 4px 12px rgba(26, 71, 42, 0.3)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <i className="fas fa-wallet" style={{ fontSize: '24px' }}></i>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '600', letterSpacing: '-0.5px' }}>
-              Expense Tracker
-            </h1>
-            <p style={{ margin: 0, fontSize: '12px', opacity: 0.9 }}>
-              <i className="fas fa-user" style={{ marginRight: '4px' }}></i>
-              Welcome, {displayName}
-            </p>
-          </div>
+      <header className="topbar">
+        <div className="searchbox">
+          <i className="fas fa-search"></i>
+          <input type="text" placeholder="Search transactions or categories" />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ position: 'relative', cursor: 'pointer' }} onClick={handleNotificationClick}>
-            <i className="far fa-bell" style={{ fontSize: '18px', opacity: 0.8 }}></i>
-            {unreadCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-6px',
-                right: '-8px',
-                background: '#e94560',
-                color: 'white',
-                borderRadius: '50%',
-                padding: '2px 6px',
-                fontSize: '10px',
-                minWidth: '18px',
-                textAlign: 'center'
-              }}>
-                {unreadCount}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={onLogout}
-            style={{
-              background: 'rgba(255,255,255,0.15)',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.2)',
-              padding: '6px 14px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.25)'}
-            onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.15)'}
-          >
+
+        <div className="topbar-actions">
+          <button type="button" className="ghost-button" onClick={onExport}>
+            <i className="fas fa-download"></i>
+            Export
+          </button>
+
+          <button type="button" className="icon-button notification-button" onClick={handleNotificationClick}>
+            <i className="far fa-bell"></i>
+            {unreadCount > 0 && <span>{unreadCount}</span>}
+          </button>
+
+          <button type="button" className="user-pill" onClick={onOpenSettings} aria-label="Open profile settings">
+            <div className="user-avatar">{displayName.charAt(0).toUpperCase()}</div>
+            <div>
+              <strong>{displayName}</strong>
+              <span>{currentEmail}</span>
+            </div>
+            <i className="fas fa-chevron-down user-pill-chevron"></i>
+          </button>
+
+          <button type="button" className="logout-button" onClick={onLogout}>
             <i className="fas fa-sign-out-alt"></i>
             Logout
           </button>
         </div>
       </header>
 
-      {showNotifications && (
-        <Notifications onClose={() => setShowNotifications(false)} />
-      )}
+      {showNotifications && <Notifications onClose={() => setShowNotifications(false)} />}
     </>
   );
 }
