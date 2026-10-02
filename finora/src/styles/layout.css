@@ -1,0 +1,636 @@
+/* =====================================================
+   Finora — Layout
+   App shell, sidebar, topbar, avatar menu,
+   notifications dropdown, bottom nav, more menu
+   ===================================================== */
+
+/* -----------------------------------------------------
+   App shell — the main container holding sidebar + content
+   ----------------------------------------------------- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+  transition: background-color var(--transition-base);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 24px 32px 32px;
+}
+
+.app-content {
+  flex: 1;
+  animation: finora-fade-in 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* -----------------------------------------------------
+   Sidebar (desktop left navigation)
+   ----------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  transition: background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity var(--transition-fast);
+}
+
+.sidebar-brand:hover {
+  opacity: 0.85;
+}
+
+.sidebar-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-nav-item {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.sidebar-nav-item i {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  transform: translateX(2px);
+}
+
+.sidebar-nav-item.active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------
+   Top bar — sits at top of content area
+   ----------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 20px 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+  transition: border-color var(--transition-base);
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-icon-button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+  position: relative;
+}
+
+.topbar-icon-button:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+  border-color: var(--color-primary);
+}
+
+.topbar-profile {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.topbar-profile:hover {
+  transform: scale(1.05);
+}
+
+/* -----------------------------------------------------
+   Mobile brand in topbar (hidden on desktop)
+   ----------------------------------------------------- */
+.topbar-mobile-brand {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.topbar-mobile-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* -----------------------------------------------------
+   Avatar dropdown menu
+   ----------------------------------------------------- */
+.topbar-profile-wrap {
+  position: relative;
+}
+
+.avatar-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 240px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  z-index: 200;
+  animation: finora-slide-up 0.18s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.avatar-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px 12px;
+}
+
+.avatar-menu-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.avatar-menu-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-menu-email {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-menu-divider {
+  height: 1px;
+  background: var(--color-divider);
+  margin: 4px 0;
+}
+
+.avatar-menu-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.avatar-menu-item i {
+  width: 16px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.avatar-menu-item:hover {
+  background: var(--color-bg);
+}
+
+.avatar-menu-item--danger {
+  color: var(--color-error);
+}
+
+.avatar-menu-item--danger i {
+  color: var(--color-error);
+}
+
+.avatar-menu-item--danger:hover {
+  background: rgba(217, 107, 107, 0.1);
+}
+
+/* -----------------------------------------------------
+   Notifications bell + dropdown
+   ----------------------------------------------------- */
+.topbar-bell-wrap {
+  position: relative;
+}
+
+.topbar-bell-dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-error);
+  border: 2px solid var(--color-surface);
+  animation: finora-pulse 2s ease-in-out infinite;
+}
+
+.notifications-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 340px;
+  max-width: calc(100vw - 32px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 250;
+  overflow: hidden;
+  animation: finora-slide-up 0.18s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.notifications-head {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--color-divider);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.notifications-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.notifications-sub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.notifications-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.notifications-body {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.notifications-empty {
+  text-align: center;
+  padding: 34px 16px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.notifications-empty i {
+  font-size: 28px;
+  color: var(--color-border);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.notification-item:hover {
+  background: var(--color-bg);
+}
+
+.notification-item--unread {
+  background: var(--color-primary-soft);
+}
+
+.notification-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+}
+
+.notification-content {
+  min-width: 0;
+}
+
+.notification-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.notification-message {
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.notification-time {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+}
+
+.notification-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* -----------------------------------------------------
+   Bottom navigation — mobile only
+   ----------------------------------------------------- */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 8px 8px 10px;
+  z-index: 50;
+  justify-content: space-around;
+  align-items: center;
+  transition: background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.bottom-nav-item {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 51;
+  transition: color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.bottom-nav-item i {
+  font-size: 16px;
+}
+
+.bottom-nav-item:hover {
+  transform: translateY(-1px);
+}
+
+.bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+.bottom-nav-add {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(15, 110, 92, 0.35);
+  display: grid;
+  place-items: center;
+  margin-top: -22px;
+  position: relative;
+  z-index: 52;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.bottom-nav-add:hover {
+  background: var(--color-primary-hover);
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(15, 110, 92, 0.45);
+}
+
+.bottom-nav-add:active {
+  transform: scale(0.98);
+}
+
+/* -----------------------------------------------------
+   More menu — mobile only, slides up from bottom
+   ----------------------------------------------------- */
+.more-menu {
+  position: fixed;
+  bottom: 78px;
+  left: 12px;
+  right: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 14px;
+  z-index: 60;
+  animation: finora-slide-up 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.more-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.more-menu-item {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 12px 4px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.more-menu-item:hover,
+.more-menu-item:active {
+  background: var(--color-bg);
+  transform: translateY(-1px);
+}
+
+.more-menu-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.more-menu-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.more-menu-item--danger .more-menu-icon {
+  background: rgba(217, 107, 107, 0.12);
+  color: var(--color-error);
+}
+
+.more-menu-item--danger .more-menu-label {
+  color: var(--color-error);
+}
+
+/* Hide More menu on desktop */
+@media (min-width: 769px) {
+  .more-menu {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------
+   Responsive — tablet
+   ----------------------------------------------------- */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .app-main {
+    padding: 20px 24px 32px;
+  }
+}
+
+/* -----------------------------------------------------
+   Responsive — mobile
+   ----------------------------------------------------- */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .app-main {
+    padding: 16px 16px 96px;
+  }
+
+  .bottom-nav {
+    display: flex;
+  }
+
+  .topbar {
+    padding: 0 0 14px;
+    margin-bottom: 18px;
+    justify-content: space-between;
+  }
+
+  .topbar-mobile-brand {
+    display: flex;
+  }
+
+  .topbar-spacer {
+    display: none;
+  }
+}
+
+/* -----------------------------------------------------
+   Responsive — small phones
+   ----------------------------------------------------- */
+@media (max-width: 480px) {
+  .notifications-menu {
+    right: -60px;
+  }
+}

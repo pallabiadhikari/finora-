@@ -1,0 +1,12 @@
+/* =====================================================
+   Finora — Main stylesheet entry point
+   This file only imports the split stylesheets.
+   Order matters: foundation first, then layout,
+   then components, then pages, then landing.
+   ===================================================== */
+
+@import './styles/base.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+@import './styles/pages.css';
+@import './styles/landing.css';
